@@ -1,0 +1,6 @@
+name: "kill"
+shortDesc: "Remove any finalizers on a pod, and delete it"
+command: "./kill"
+flags:
+  - name: grace-period
+    desc: Period of time in seconds given to the resource to terminate gracefully

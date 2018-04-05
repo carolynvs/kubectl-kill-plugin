@@ -3,32 +3,40 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/kubectl/pkg/pluginutils"
 )
 
 var (
-	c       *kubernetes.Clientset
-	ns      string
-	podName string
+	c           *kubernetes.Clientset
+	ns          string
+	podName     string
+	gracePeriod int64
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: kubectl plugin kill POD_NAME")
+		fmt.Println("usage: kubectl plugin kill POD_NAME [--grace-period]")
 		os.Exit(1)
 	}
 
 	podName = os.Args[1]
 
+	gracePeriodFlag := os.Getenv("KUBECTL_PLUGINS_LOCAL_FLAG_GRACE_PERIOD")
+	if g, err := strconv.ParseInt(gracePeriodFlag, 10, 64); err == nil {
+		gracePeriod = g
+	}
+
 	kill()
 }
 
 func kill() {
-	loadClient()
+	loadConfig()
 	removeFinalizers(podName)
 	deletePod(podName)
 }
@@ -51,34 +59,27 @@ func removeFinalizers(podName string) {
 		panic(err)
 	}
 
-	fmt.Printf("removed finalizer from pod %s\n", podName)
+	fmt.Printf("removed finalizers from pod %s\n", podName)
 
 }
 
 func deletePod(podName string) {
-	var noMercy int64
+	fmt.Printf("killing %s/%s with a grace period of %ds...\n", ns, podName, gracePeriod)
 
-	opts := &metav1.DeleteOptions{GracePeriodSeconds: &noMercy}
+	opts := &metav1.DeleteOptions{GracePeriodSeconds: &gracePeriod}
 	err := c.CoreV1().Pods(ns).Delete(podName, opts)
-	if err != nil {
+	if err != nil && !errors.IsNotFound(err) {
 		panic(err)
 	}
 
 	fmt.Printf("deleted pod %s\n", podName)
 }
 
-func loadClient() {
-	rules := clientcmd.NewDefaultClientConfigLoadingRules()
-	rules.DefaultClientConfig = &clientcmd.DefaultClientConfig
-	overrides := &clientcmd.ConfigOverrides{}
-
-	config := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(rules, overrides)
-
-	restConfig, err := config.ClientConfig()
+func loadConfig() {
+	restConfig, kubeConfig, err := pluginutils.InitClientAndConfig()
 	if err != nil {
 		panic(err)
 	}
-
 	c = kubernetes.NewForConfigOrDie(restConfig)
-	ns, _, _ = config.Namespace()
+	ns, _, _ = kubeConfig.Namespace()
 }
