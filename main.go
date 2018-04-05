@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
@@ -10,6 +11,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/kubectl/pkg/pluginutils"
+
+	_ "github.com/golang/glog"
 )
 
 var (
@@ -18,6 +21,12 @@ var (
 	podName     string
 	gracePeriod int64
 )
+
+func init() {
+	// Initialize glog flags
+	flag.CommandLine.Set("logtostderr", "true")
+	flag.CommandLine.Set("v", os.Getenv("KUBECTL_PLUGINS_GLOBAL_FLAG_V"))
+}
 
 func main() {
 	if len(os.Args) < 2 {
