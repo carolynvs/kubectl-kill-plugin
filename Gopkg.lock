@@ -308,9 +308,15 @@
   revision = "78700dec6369ba22221b72770783300f143df150"
   version = "v6.0.0"
 
+[[projects]]
+  branch = "master"
+  name = "k8s.io/kubectl"
+  packages = ["pkg/pluginutils"]
+  revision = "b40ae29ca49d0032cb1a6e9f371c2ca658828aef"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1d7c7166a036f83b767fe8b6c9304bf2de6592b70d3f4d11d521bc7ee4cad8ce"
+  inputs-digest = "119cd9ff8255b4fcf54509d6385347a99e17ad231a5576118ece4bca51c33fbd"
   solver-name = "gps-cdcl"
   solver-version = 1

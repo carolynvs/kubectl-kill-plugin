@@ -1,6 +1,10 @@
-[[constraint]]
+[[override]]
   name = "k8s.io/client-go"
   version = "6.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "k8s.io/kubectl"
 
 [prune]
   go-tests = true
