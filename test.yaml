@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-world
+  finalizers:
+  - finalizer.kubernetes.io/hello-world
+spec:
+  containers:
+  - image: hello-world
+    name: hello-world

@@ -69,7 +69,6 @@ func removeFinalizers(podName string) {
 	}
 
 	fmt.Printf("removed finalizers from pod %s\n", podName)
-
 }
 
 func deletePod(podName string) {
