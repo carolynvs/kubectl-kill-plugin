@@ -18,7 +18,7 @@ var (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("kubectl plugin kill POD_NAME")
+		fmt.Println("usage: kubectl plugin kill POD_NAME")
 		os.Exit(1)
 	}
 
