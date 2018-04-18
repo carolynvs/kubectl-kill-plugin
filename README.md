@@ -1,4 +1,8 @@
-# Deploy the plugin
+# kubectl plugin kill
+Example kubectl plugin that force deletes a pod, removing any finalizers
+that may be blocking deletion.
+
+## Deploy the plugin
 ```console
 $ make deploy
 mkdir -p ~/.kube/plugins/kill
@@ -7,7 +11,7 @@ cp plugin.yaml ~/.kube/plugins/kill/
 
 ```
 
-# Try the plugin
+## Try the plugin
 
 ```console
 $ make test
